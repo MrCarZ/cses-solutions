@@ -4,7 +4,8 @@
 using namespace std;
 using ll = long long int;
 
-const int MAXN = 1E+6 + 12;
+const int MAXN = 1E+2 + 5;
+const int MAXX = 1E+6 + 5;
 const int MOD = 1E+9 + 7;
 const int INF = 1E+9 + 7;
 
@@ -13,42 +14,61 @@ const int INF = 1E+9 + 7;
 // Checar casos de borda
 // Checar TLE
 
-ll dp[MAXN];
-ll v[MAXN];
-int vec[105];
-int n;
+int vec[MAXN];
+int dp[MAXX];
+int v[MAXX];
 
-ll solve(int sum){
-    if(sum == 0) return 1;
-    if(v[sum]) return dp[sum] % MOD;
+int n, x;
+
+int solve(int sum){
+    if(sum==0){
+        return 1;
+    }
+    if(v[sum]){
+        return dp[sum];
+    }
 
     dp[sum] = 0;
-    
+    v[sum] = 1; 
 
     for(int i = 0; i<n; i++){
-        int pos = sum - vec[i];
-        if(pos >= 0) {
-            dp[sum] = (dp[sum] + (solve(pos))) % MOD;        
-            v[sum] = 1;
+        if(sum - vec[i] >= 0){
+            dp[sum] += solve(sum - vec[i]);
+            dp[sum] %= MOD;
         }
     }
 
-    return dp[sum] % MOD;
+    return dp[sum];
 }
 
-int main(){$
-    int c;
-    cin>>n>>c;
+void solve2(int x){
+    dp[0] = 1;
 
-    for(int i = 0; i<n; i++){ 
+    for(int i = 1; i<=x; i++) dp[i] = 0;
+
+    for(int sum = 1; sum<=x; sum++){
+        for(int i = 0; i<n; i++){
+            if(sum - vec[i] >= 0){
+                dp[sum] += dp[sum - vec[i]];
+                dp[sum] %= MOD;
+            }
+        }   
+    }
+}
+
+
+
+int main(){
+    $
+    cin>>n>>x;
+
+    for(int i = 0; i<n; i++){
         cin>>vec[i];
     }
 
-    v[0] = 1;
+    solve2(x);
 
-    ll ans = solve(c);
-
-    cout<<ans % MOD<<'\n';
-
+    cout<<dp[x]<<"\n";
+    
     return 0;
 }
