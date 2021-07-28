@@ -1,34 +1,59 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-using ll = long long int;
 
-const ll MAXN = 1E+6;
-const ll MOD = 1E+9 + 7;
+const int MAXN = 1e+6 + 5;
+const int MOD = 1e+9 + 7;
 
-ll dice[] = {1, 2, 3, 4, 5, 6};
+int dp[MAXN];
+int v[MAXN];
 
-vector<ll> ans(MAXN+1, 0);
+int solve(int n){
+    if(n == 0){
+        return 1;
+    }
+    if(v[n]){
+        return dp[n];
+    }
 
-ll count_ways(int n){
-    
-    ans[0] = 1;
+    dp[n] = 0;
+    v[n] = 1;
+
+    for(int i = 1; i<=6; i++){
+        if(n - i >= 0){
+            dp[n] += solve(n-i);
+            dp[n] %= MOD;
+        }
+    }
+
+    return dp[n];
+}
+
+void solve2(int n){
+    dp[0] = 1;
+
     for(int i = 1; i<=n; i++){
-        for(int j = 0; j<6;j++){
-            if(i >= dice[j]){
-                ans[i] += ans[i - dice[j]] % MOD;
+        dp[i] = 0;
+    }
+
+    for(int sum = 1; sum<=n; sum++){
+        for(int i = 1; i<=6; i++){
+            if(sum - i >= 0){
+                dp[sum] += dp[sum-i];
+                dp[sum] %= MOD;
             }
         }
     }
-    return ans[n];
 }
 
-int main(){
-    ll n;
 
+int main(){
+    ios::sync_with_stdio(0);
+    int n;
     cin>>n;
 
-    ll ans = count_ways(n);
-
-    cout<<ans % MOD<<'\n';
+    solve2(n);
+    
+    cout<<dp[n]<<'\n';
     return 0;
 }

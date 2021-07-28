@@ -2,49 +2,69 @@
 
 using namespace std;
 
-const int MAXN = 1E+6;
-const int INF = 1E+9 + 7;
+const int MAXN = 1E+2 + 5;
+const int MAXX = 1E+6 + 5;
+const int INF = 1E+9;
 
-vector<int> dp(MAXN+1, -1);
-vector<int> vec(1E+2 +1, 0);
+int n, x;
+int vec[MAXN];
+int dp[MAXX];
+int v[MAXX];
 
-int solve(int sum, int n){
-    if(sum == 0) return 0;
-    if (dp[sum] != -1) return dp[sum];
-
-    int ans = INF;
-
-    for(int i = 0; i<n; i++){
-        int pos = sum - vec[i];
-        if(pos >= 0){
-            ans = min(solve(sum - vec[i], n) + 1, ans);
-        }
+int solve(int sum){
+    if(sum == 0){
+        return 1;
+    }
+    if(v[sum]){
+        return dp[sum];
     }
 
-    dp[sum] = ans;
+    dp[sum] = INF;
+    v[sum] = 1;
+
+    for(int i = 0; i<n; i++){
+        if(sum - vec[i] >= 0){
+            dp[sum] = min(solve(sum - vec[i])+1, dp[sum]);
+        }
+    }
 
     return dp[sum];
 }
 
+void solve2(int x){
+    dp[0] = 1;
+
+    for(int i = 1; i<=x; i++){
+        dp[i] = 0;
+    }
+
+    for(int sum = 1; sum<=x; sum++){
+        dp[sum] = INF;
+        for(int i = 0; i<n; i++){
+            if(sum - vec[i] >= 0){
+                dp[sum] = min(dp[sum - vec[i]]+1, dp[sum]);
+            }
+        }
+    }
+}
 
 int main(){
     ios::sync_with_stdio(0);
-    int n, c;
+    cin>>n>>x;
 
-    cin>>n>>c;
-    
-    for(int i = 0; i<n; i++) cin>>vec[i];
-    
-    dp[0] = 0;
-    
-    int ans = solve(c,n);
+    for(int i = 0; i<n; i++){
+        cin>>vec[i];
+    }
 
-    if(ans != INF){
-        cout<<ans<<'\n';
+    solve2(x);
+
+    if(dp[x] == INF){
+        cout<<-1<<'\n';
     }
     else{
-        cout<<-1<<'\n';
+        cout<<dp[x]-1<<'\n';
     }
 
     return 0;
 }
+
